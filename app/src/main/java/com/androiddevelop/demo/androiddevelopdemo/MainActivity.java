@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.androiddevelop.demo.androiddevelopdemo.class1.Class1Activity;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override

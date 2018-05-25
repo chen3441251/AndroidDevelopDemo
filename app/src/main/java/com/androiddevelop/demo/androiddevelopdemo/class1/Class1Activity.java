@@ -1,8 +1,12 @@
-package com.androiddevelop.demo.androiddevelopdemo;
+package com.androiddevelop.demo.androiddevelopdemo.class1;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,8 +16,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.androiddevelop.demo.androiddevelopdemo.R;
+import com.androiddevelop.demo.androiddevelopdemo.utils.CommUtil;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Class1Activity extends AppCompatActivity {
 
@@ -29,14 +37,20 @@ public class Class1Activity extends AppCompatActivity {
                 R.mipmap.imag7, R.mipmap.imag8, R.mipmap.imag9};
         ArrayList<Integer> list = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
-            list.add(arr[i%arr.length]);
+            list.add(arr[i % arr.length]);
         }
 
         RecyclerView recyclerview = (RecyclerView) findViewById(R.id.recyclerview);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerview.setLayoutManager(linearLayoutManager);
-        recyclerview.setAdapter(new LinearAdapter(this, list));
+        linearLayoutManager.setSmoothScrollbarEnabled(true);
+        //设置分割线
+        CustomItemDecoration customItemDecoration = new CustomItemDecoration(this, R.drawable.shap_dilive, LinearLayoutManager.HORIZONTAL, CommUtil.dip2px(getApplication(), 5));
+        recyclerview.addItemDecoration(customItemDecoration);
+        recyclerview.setItemAnimator(new DefaultItemAnimator());
+        final LinearAdapter linearAdapter = new LinearAdapter(this, list);
+        recyclerview.setAdapter(linearAdapter);
         recyclerview.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -48,10 +62,25 @@ public class Class1Activity extends AppCompatActivity {
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
+        //新增swiperefreshlayout刷新
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setColorSchemeColors(Color.RED,Color.YELLOW,Color.GREEN);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        linearAdapter.notifyDataSetChanged();
+                    }
+                },2000);
+            }
+        });
     }
 
     class LinearAdapter extends RecyclerView.Adapter<LinearAdapter.MyViewHolder> {
-        private final Context context;
+        private final Context       context;
         private final List<Integer> list;
 
         public LinearAdapter(Context context, List<Integer> list) {
@@ -67,29 +96,29 @@ public class Class1Activity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final MyViewHolder holder, final int position) {
-            Log.d("xxx","pos="+position);
-            holder.mIv1.setBackgroundResource(list.get(position%3));
-            holder.mIv2.setBackgroundResource(list.get((position+1)%3));
-            holder.mIv3.setBackgroundResource(list.get((position+2)%3));
+            Log.d("xxx", "pos=" + position);
+            holder.mIv1.setBackgroundResource(list.get(new Random().nextInt(30)));
+            holder.mIv2.setBackgroundResource(list.get(new Random().nextInt(30)));
+            holder.mIv3.setBackgroundResource(list.get(new Random().nextInt(30)));
             holder.mIv1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int layoutPosition = holder.getLayoutPosition();
-                    Toast.makeText(getApplication(),"点击了第"+layoutPosition+"页的第1张图片",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplication(), "点击了第" + layoutPosition + "页的第1张图片", Toast.LENGTH_SHORT).show();
                 }
             });
             holder.mIv2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int layoutPosition = holder.getLayoutPosition();
-                    Toast.makeText(getApplication(),"点击了第"+layoutPosition+"页的第2张图片",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplication(), "点击了第" + layoutPosition + "页的第2张图片", Toast.LENGTH_SHORT).show();
                 }
             });
             holder.mIv3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int layoutPosition = holder.getLayoutPosition();
-                    Toast.makeText(getApplication(),"点击了第"+layoutPosition+"页的第3张图片",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplication(), "点击了第" + layoutPosition + "页的第3张图片", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -101,9 +130,9 @@ public class Class1Activity extends AppCompatActivity {
 
         class MyViewHolder extends RecyclerView.ViewHolder {
 
-              ImageView mIv1;
-              ImageView mIv2;
-              ImageView mIv3;
+            ImageView mIv1;
+            ImageView mIv2;
+            ImageView mIv3;
 
             public MyViewHolder(View itemView) {
                 super(itemView);
