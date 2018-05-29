@@ -1,29 +1,24 @@
 package com.androiddevelop.demo.androiddevelopdemo.class1;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.androiddevelop.demo.androiddevelopdemo.R;
 import com.androiddevelop.demo.androiddevelopdemo.utils.CommUtil;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
-public class Class1Activity extends AppCompatActivity {
+public class Class1Activity extends AppCompatActivity implements LinearAdapter.OnItemClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +38,16 @@ public class Class1Activity extends AppCompatActivity {
         RecyclerView recyclerview = (RecyclerView) findViewById(R.id.recyclerview);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         recyclerview.setLayoutManager(linearLayoutManager);
         linearLayoutManager.setSmoothScrollbarEnabled(true);
         //设置分割线
         CustomItemDecoration customItemDecoration = new CustomItemDecoration(this, R.drawable.shap_dilive, LinearLayoutManager.HORIZONTAL, CommUtil.dip2px(getApplication(), 5));
         recyclerview.addItemDecoration(customItemDecoration);
         recyclerview.setItemAnimator(new DefaultItemAnimator());
-        final LinearAdapter linearAdapter = new LinearAdapter(this, list);
+        final LinearAdapter linearAdapter = new LinearAdapter(this, this, list);
         recyclerview.setAdapter(linearAdapter);
+        linearAdapter.setOnItemClickListener(this);
         recyclerview.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -79,69 +76,44 @@ public class Class1Activity extends AppCompatActivity {
         });
     }
 
-    class LinearAdapter extends RecyclerView.Adapter<LinearAdapter.MyViewHolder> {
-        private final Context       context;
-        private final List<Integer> list;
 
-        public LinearAdapter(Context context, List<Integer> list) {
-            this.context = context;
-            this.list = list;
-        }
+    @Override
+    public void onItemClick(View view, int position) {
+        switch (view.getId()) {
+            case R.id.iv_1:
+                Toast.makeText(getApplication(), "短点击了第" + position + "页的第1张图片", Toast.LENGTH_SHORT).show();
 
-        @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            MyViewHolder myViewHolder = new MyViewHolder(LayoutInflater.from(context).inflate(R.layout.item_recycleview_layout, parent, false));
-            return myViewHolder;
-        }
+                break;
+            case R.id.iv_2:
+                Toast.makeText(getApplication(), "短点击了第" + position + "页的第2张图片", Toast.LENGTH_SHORT).show();
 
-        @Override
-        public void onBindViewHolder(final MyViewHolder holder, final int position) {
-            Log.d("xxx", "pos=" + position);
-            holder.mIv1.setBackgroundResource(list.get(new Random().nextInt(30)));
-            holder.mIv2.setBackgroundResource(list.get(new Random().nextInt(30)));
-            holder.mIv3.setBackgroundResource(list.get(new Random().nextInt(30)));
-            holder.mIv1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int layoutPosition = holder.getLayoutPosition();
-                    Toast.makeText(getApplication(), "点击了第" + layoutPosition + "页的第1张图片", Toast.LENGTH_SHORT).show();
-                }
-            });
-            holder.mIv2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int layoutPosition = holder.getLayoutPosition();
-                    Toast.makeText(getApplication(), "点击了第" + layoutPosition + "页的第2张图片", Toast.LENGTH_SHORT).show();
-                }
-            });
-            holder.mIv3.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int layoutPosition = holder.getLayoutPosition();
-                    Toast.makeText(getApplication(), "点击了第" + layoutPosition + "页的第3张图片", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+                break;
+            case R.id.iv_3:
+                Toast.makeText(getApplication(), "短点击了第" + position + "页的第3张图片", Toast.LENGTH_SHORT).show();
 
-        @Override
-        public int getItemCount() {
-            return list.size();
-        }
-
-        class MyViewHolder extends RecyclerView.ViewHolder {
-
-            ImageView mIv1;
-            ImageView mIv2;
-            ImageView mIv3;
-
-            public MyViewHolder(View itemView) {
-                super(itemView);
-                mIv1 = itemView.findViewById(R.id.iv_1);
-                mIv2 = itemView.findViewById(R.id.iv_2);
-                mIv3 = itemView.findViewById(R.id.iv_3);
-            }
+                break;
+            default:
+                break;
         }
     }
 
+    @Override
+    public void onLongItemClick(View view, int postion) {
+        switch (view.getId()) {
+            case R.id.iv_1:
+                Toast.makeText(getApplication(), "长点击了第" + postion + "页的第1张图片", Toast.LENGTH_SHORT).show();
 
+                break;
+            case R.id.iv_2:
+                Toast.makeText(getApplication(), "长点击了第" + postion + "页的第2张图片", Toast.LENGTH_SHORT).show();
+
+                break;
+            case R.id.iv_3:
+                Toast.makeText(getApplication(), "长点击了第" + postion + "页的第3张图片", Toast.LENGTH_SHORT).show();
+
+                break;
+            default:
+                break;
+        }
+    }
 }
